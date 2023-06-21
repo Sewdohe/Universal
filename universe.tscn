@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://cif3swtst7yi5"]
+
+[ext_resource type="Script" path="res://ShipController.gd" id="1_1mbit"]
+[ext_resource type="Texture2D" uid="uid://bsrmh68pvj6jl" path="res://spaceship.png" id="1_km1rp"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+script = ExtResource("1_1mbit")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+rotation = 1.5704
+texture = ExtResource("1_km1rp")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="CharacterBody2D"]
+rotation = 1.5704
+polygon = PackedVector2Array(0, -9, 3, -5, 6, 7, -6, 7, -3, -5)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(-2, 2)
