@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://b1rn1ekxykn5p"]
+
+[ext_resource type="Script" path="res://Prefabs/bullet.gd" id="1_4vceq"]
+[ext_resource type="Texture2D" uid="uid://vmux45kkmhbj" path="res://Graphics/bulle-bluet.png" id="1_em035"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wp073"]
+
+[node name="Bullet" type="RigidBody2D"]
+script = ExtResource("1_4vceq")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(15, 6)
+texture = ExtResource("1_em035")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(15, 6)
+rotation = 1.57166
+scale = Vector2(0.166395, 0.166395)
+shape = SubResource("CapsuleShape2D_wp073")
