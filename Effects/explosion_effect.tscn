@@ -1,0 +1,56 @@
+[gd_scene load_steps=8 format=3 uid="uid://pwrohvltqbjq"]
+
+[sub_resource type="Curve" id="Curve_xjwmu"]
+min_value = -360.0
+max_value = 360.0
+_data = [Vector2(0.0361446, 307.636), 0.0, 0.0, 0, 0, Vector2(1, -340.364), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_kvo5n"]
+curve = SubResource("Curve_xjwmu")
+
+[sub_resource type="Gradient" id="Gradient_ydalg"]
+offsets = PackedFloat32Array(0, 0.488889, 1)
+colors = PackedColorArray(0.0470588, 0.94902, 0.8, 1, 0.484706, 0.972433, 0.891852, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_xemm8"]
+gradient = SubResource("Gradient_ydalg")
+
+[sub_resource type="Curve" id="Curve_xsk3k"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_7ira3"]
+curve = SubResource("Curve_xsk3k")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_yxuyh"]
+emission_shape = 1
+emission_sphere_radius = 1.0
+particle_flag_disable_z = true
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 21.05
+initial_velocity_max = 52.63
+angular_velocity_min = -45.48
+angular_velocity_max = 60.63
+orbit_velocity_min = 0.0
+orbit_velocity_max = 0.0
+angle_min = -30.3
+angle_max = 75.8
+angle_curve = SubResource("CurveTexture_kvo5n")
+scale_min = 0.5
+scale_max = 2.0
+scale_curve = SubResource("CurveTexture_7ira3")
+color = Color(0.0470588, 0.94902, 0.8, 1)
+color_ramp = SubResource("GradientTexture1D_xemm8")
+hue_variation_min = -0.17
+hue_variation_max = 0.18
+
+[node name="ExplosionEffect" type="GPUParticles2D"]
+position = Vector2(-28, -33)
+emitting = false
+amount = 21
+process_material = SubResource("ParticleProcessMaterial_yxuyh")
+lifetime = 0.4
+one_shot = true
+explosiveness = 1.0

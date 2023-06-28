@@ -1,15 +1,21 @@
-[gd_scene load_steps=59 format=3 uid="uid://cif3swtst7yi5"]
+[gd_scene load_steps=77 format=3 uid="uid://cif3swtst7yi5"]
 
 [ext_resource type="Script" path="res://Scripts/ShipController.gd" id="1_udg8g"]
 [ext_resource type="Texture2D" uid="uid://dokcwnbt7y55v" path="res://Graphics/star-002.png" id="2_n6y7w"]
-[ext_resource type="Texture2D" uid="uid://bsrmh68pvj6jl" path="res://Graphics/spaceship.png" id="3_akd5x"]
+[ext_resource type="Shader" path="res://shield.gdshader" id="3_p6utk"]
+[ext_resource type="Script" path="res://PlayerCam.gd" id="3_sddlc"]
+[ext_resource type="Texture2D" uid="uid://da872ue2waitc" path="res://Graphics/ship-outline.png" id="4_78kip"]
+[ext_resource type="Texture2D" uid="uid://dwde3d7nvscuj" path="res://Graphics/shield.png" id="4_b1ynw"]
 [ext_resource type="AudioStream" uid="uid://il5s1ikkqfug" path="res://Sounds/thrusters_loopwav-14699.wav" id="4_r5nxf"]
 [ext_resource type="Texture2D" uid="uid://buem51b2xc7nq" path="res://Graphics/Space Background.png" id="4_rys2x"]
 [ext_resource type="Texture2D" uid="uid://4ni4eiyhbj12" path="res://Graphics/black_hole.png" id="5_mjca4"]
 [ext_resource type="AudioStream" uid="uid://pvjo0r2gc5pk" path="res://Sounds/short-laser-gun.wav" id="5_vuy1y"]
 [ext_resource type="Texture2D" uid="uid://csmt6f1bht26" path="res://Graphics/earth.png" id="6_hu5e0"]
+[ext_resource type="Texture2D" uid="uid://cfschlq5e4f0p" path="res://Graphics/reticule.png" id="7_6yb0y"]
 [ext_resource type="Texture2D" uid="uid://dusag2ps5ks1r" path="res://Graphics/sun.png" id="7_qj7b2"]
 [ext_resource type="AudioStream" uid="uid://dhw1nwypuphwo" path="res://Sounds/Dark _Atmosphere13_Looped_24bit.wav" id="8_harp7"]
+[ext_resource type="Texture2D" uid="uid://s4haqa7dc8dk" path="res://Graphics/enemy.png" id="12_3cx4l"]
+[ext_resource type="Script" path="res://EnemyController.gd" id="12_fuwve"]
 
 [sub_resource type="Gradient" id="Gradient_vkwpx"]
 offsets = PackedFloat32Array(0.244444, 0.614815, 1)
@@ -48,8 +54,37 @@ turbulence_noise_strength = 1.22
 turbulence_noise_scale = 7.95
 turbulence_noise_speed = Vector3(0.467, 0.438, 0.455)
 collision_mode = 1
-collision_friction = 0.0
-collision_bounce = 0.0
+collision_friction = 0.15
+collision_bounce = 0.03
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ec2ai"]
+shader = ExtResource("3_p6utk")
+shader_parameter/scale = 25.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_u0lgx"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0weik"]
+resource_local_to_scene = true
+
+[sub_resource type="SystemFont" id="SystemFont_5a708"]
+
+[sub_resource type="Theme" id="Theme_v0ecf"]
+default_font = SubResource("SystemFont_5a708")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v2y7b"]
+bg_color = Color(0.431373, 0.341176, 0.568627, 1)
+corner_detail = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u7r24"]
+bg_color = Color(1, 0.0392157, 0.180392, 1)
+
+[sub_resource type="Theme" id="Theme_yss4m"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3gy5c"]
+bg_color = Color(0.431373, 0.341176, 0.568627, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2ya4q"]
+bg_color = Color(0.0666667, 0.623529, 1, 1)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_i3tkw"]
 atlas = ExtResource("5_mjca4")
@@ -349,15 +384,39 @@ animations = [{
 "speed": 15.0
 }]
 
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_cdshl"]
+friction = 3.46
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wqb7a"]
+size = Vector2(20, 1000)
+
 [node name="Node2D" type="Node2D"]
 metadata/_edit_horizontal_guides_ = [-4.0]
 
-[node name="Player" type="RigidBody2D" parent="."]
+[node name="PlayerCam" type="Camera2D" parent="."]
+position = Vector2(494, 609)
+zoom = Vector2(3, 3)
+limit_left = 0
+limit_top = 0
+limit_right = 1000
+limit_bottom = 1000
+limit_smoothed = true
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+editor_draw_limits = true
+script = ExtResource("3_sddlc")
+
+[node name="Player" type="RigidBody2D" parent="." groups=["Player"]]
+position = Vector2(494, 609)
+collision_layer = 3
+max_contacts_reported = 1
+contact_monitor = true
 script = ExtResource("1_udg8g")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Player"]
-rotation = 1.5704
-polygon = PackedVector2Array(0, -9, 3, -5, 6, 7, -6, 7, -3, -5)
+polygon = PackedVector2Array(7, 0, 1, 4, -8, 6, -8, -5, 0, -4)
 
 [node name="ThrusterLeft" type="GPUParticles2D" parent="Player"]
 position = Vector2(-7, -5)
@@ -373,21 +432,28 @@ amount = 60
 process_material = SubResource("ParticleProcessMaterial_smvj7")
 texture = ExtResource("2_n6y7w")
 
-[node name="PlayerCam" type="Camera2D" parent="Player"]
-position = Vector2(-2, 2)
-limit_smoothed = true
-position_smoothing_enabled = true
-position_smoothing_speed = 8.0
-drag_horizontal_enabled = true
-drag_vertical_enabled = true
+[node name="Shield" type="Sprite2D" parent="Player"]
+visible = false
+material = SubResource("ShaderMaterial_ec2ai")
+position = Vector2(-2, 0)
+scale = Vector2(0.927, 0.927)
+texture = ExtResource("4_b1ynw")
 
-[node name="Sprite2D" type="Sprite2D" parent="Player"]
-rotation = 1.5704
-texture = ExtResource("3_akd5x")
+[node name="ShieldCollider" type="CollisionShape2D" parent="Player"]
+visible = false
+position = Vector2(-2, 0)
+scale = Vector2(1.496, 1.496)
+shape = SubResource("CircleShape2D_u0lgx")
+disabled = true
+
+[node name="Ship" type="Sprite2D" parent="Player"]
+material = SubResource("ShaderMaterial_0weik")
+rotation = 0.000674129
+texture = ExtResource("4_78kip")
 
 [node name="ThrustSound" type="AudioStreamPlayer" parent="Player"]
 stream = ExtResource("4_r5nxf")
-volume_db = 4.685
+volume_db = 1.859
 autoplay = true
 
 [node name="LaserSound" type="AudioStreamPlayer" parent="Player"]
@@ -396,34 +462,89 @@ stream = ExtResource("5_vuy1y")
 [node name="GunPosRight" type="Marker2D" parent="Player"]
 position = Vector2(-3, -3)
 
-[node name="GunPosLeft" type="Marker2D" parent="Player"]
-position = Vector2(-3, -8)
-
 [node name="ShotTimer" type="Timer" parent="Player"]
 process_callback = 0
 wait_time = 0.1
 one_shot = true
 autostart = true
 
-[node name="TextureRect" type="TextureRect" parent="."]
-editor_description = "Background texture rectangle"
-z_index = -1
-offset_left = -571.0
-offset_top = -568.0
-offset_right = 429.0
-offset_bottom = 432.0
-scale = Vector2(1.10054, 1.10054)
-texture = ExtResource("4_rys2x")
-stretch_mode = 1
+[node name="GunPosLeft" type="Marker2D" parent="Player"]
+position = Vector2(-3, -8)
+
+[node name="Reticule" type="Sprite2D" parent="Player"]
+visible = false
+position = Vector2(34, 2)
+texture = ExtResource("7_6yb0y")
+
+[node name="TextureRect" type="TextureRect" parent="Player"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="Player"]
+remote_path = NodePath("../../PlayerCam")
+update_rotation = false
+
+[node name="LeftSide" type="Marker2D" parent="Player"]
+position = Vector2(0.999847, -16)
+
+[node name="RightSide" type="Marker2D" parent="Player"]
+position = Vector2(0.999847, 15)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Player"]
+
+[node name="Control" type="Control" parent="Player/CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 12.0
+offset_top = 6.0
+offset_right = 138.0
+offset_bottom = 72.0
+scale = Vector2(2.03051, 2.04757)
+
+[node name="ProgressBar" type="ProgressBar" parent="Player/CanvasLayer/Control"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 8.0
+offset_bottom = 31.0
+scale = Vector2(27.9724, 0.584685)
+theme = SubResource("Theme_v0ecf")
+theme_override_styles/background = SubResource("StyleBoxFlat_v2y7b")
+theme_override_styles/fill = SubResource("StyleBoxFlat_u7r24")
+value = 50.0
+show_percentage = false
+
+[node name="ProgressBar2" type="ProgressBar" parent="Player/CanvasLayer/Control"]
+layout_mode = 0
+offset_left = 4.92486
+offset_top = 23.4425
+offset_right = 8.92486
+offset_bottom = 50.4425
+scale = Vector2(27.6731, 0.609293)
+theme = SubResource("Theme_yss4m")
+theme_override_styles/background = SubResource("StyleBoxFlat_3gy5c")
+theme_override_styles/fill = SubResource("StyleBoxFlat_2ya4q")
+max_value = 200.0
+value = 50.0
+show_percentage = false
 
 [node name="BlackHole" type="AnimatedSprite2D" parent="."]
-position = Vector2(219, -92)
+position = Vector2(776, 486)
 sprite_frames = SubResource("SpriteFrames_uedp5")
 animation = &"spin"
 autoplay = "spin"
 
+[node name="Background" type="TextureRect" parent="."]
+editor_description = "Background texture rectangle"
+z_index = -1
+offset_right = 1000.0
+offset_bottom = 1000.0
+scale = Vector2(0.999917, 0.999917)
+texture = ExtResource("4_rys2x")
+stretch_mode = 1
+
 [node name="Earth" type="RigidBody2D" parent="." groups=["StellarBody"]]
-position = Vector2(214, 115)
+position = Vector2(771, 693)
 scale = Vector2(1.21119, 1.21119)
 mass = 1000.0
 
@@ -437,7 +558,7 @@ scale = Vector2(4.221, 4.221)
 shape = SubResource("CircleShape2D_6qnaq")
 
 [node name="Star" type="RigidBody2D" parent="." groups=["StellarBody"]]
-position = Vector2(-343, 46)
+position = Vector2(214, 624)
 scale = Vector2(1.10054, 1.10054)
 mass = 1000.0
 
@@ -454,5 +575,171 @@ shape = SubResource("CircleShape2D_6qnaq")
 position = Vector2(-343, 46)
 scale = Vector2(1.10054, 1.10054)
 stream = ExtResource("8_harp7")
-volume_db = 2.811
 autoplay = true
+
+[node name="Enemy" type="RigidBody2D" parent="." groups=["Targetable"]]
+position = Vector2(655, 602)
+rotation = 3.03612
+physics_material_override = SubResource("PhysicsMaterial_cdshl")
+max_contacts_reported = 1
+contact_monitor = true
+script = ExtResource("12_fuwve")
+persue_distance = 200
+persue = true
+
+[node name="Sprite2D" type="Sprite2D" parent="Enemy"]
+texture = ExtResource("12_3cx4l")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Enemy"]
+polygon = PackedVector2Array(5, 0, 0, 6, -4, 6, -6, 5, -3, 2, -3, -2, -6, -4, -3, -7, 0, -7)
+
+[node name="LaserSound" type="AudioStreamPlayer" parent="Enemy"]
+stream = ExtResource("5_vuy1y")
+
+[node name="ShotTimer" type="Timer" parent="Enemy"]
+process_callback = 0
+wait_time = 1.181
+one_shot = true
+autostart = true
+
+[node name="GunPosRight" type="Marker2D" parent="Enemy"]
+position = Vector2(4, -3)
+
+[node name="GunPosLeft" type="Marker2D" parent="Enemy"]
+position = Vector2(4, -8)
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="Enemy"]
+
+[node name="Enemy2" type="RigidBody2D" parent="." groups=["Targetable"]]
+position = Vector2(650, 629)
+rotation = 3.03612
+physics_material_override = SubResource("PhysicsMaterial_cdshl")
+max_contacts_reported = 1
+contact_monitor = true
+script = ExtResource("12_fuwve")
+persue_distance = 200
+persue = true
+
+[node name="Sprite2D" type="Sprite2D" parent="Enemy2"]
+texture = ExtResource("12_3cx4l")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Enemy2"]
+polygon = PackedVector2Array(5, 0, 0, 6, -4, 6, -6, 5, -3, 2, -3, -2, -6, -4, -3, -7, 0, -7)
+
+[node name="LaserSound" type="AudioStreamPlayer" parent="Enemy2"]
+stream = ExtResource("5_vuy1y")
+
+[node name="ShotTimer" type="Timer" parent="Enemy2"]
+process_callback = 0
+wait_time = 1.181
+one_shot = true
+autostart = true
+
+[node name="GunPosRight" type="Marker2D" parent="Enemy2"]
+position = Vector2(4, -3)
+
+[node name="GunPosLeft" type="Marker2D" parent="Enemy2"]
+position = Vector2(4, -8)
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="Enemy2"]
+
+[node name="Enemy3" type="RigidBody2D" parent="." groups=["Targetable"]]
+position = Vector2(604, 538)
+rotation = 3.03612
+physics_material_override = SubResource("PhysicsMaterial_cdshl")
+max_contacts_reported = 1
+contact_monitor = true
+script = ExtResource("12_fuwve")
+persue_distance = 200
+persue = true
+
+[node name="Sprite2D" type="Sprite2D" parent="Enemy3"]
+texture = ExtResource("12_3cx4l")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Enemy3"]
+polygon = PackedVector2Array(5, 0, 0, 6, -4, 6, -6, 5, -3, 2, -3, -2, -6, -4, -3, -7, 0, -7)
+
+[node name="LaserSound" type="AudioStreamPlayer" parent="Enemy3"]
+stream = ExtResource("5_vuy1y")
+
+[node name="ShotTimer" type="Timer" parent="Enemy3"]
+process_callback = 0
+wait_time = 1.181
+one_shot = true
+autostart = true
+
+[node name="GunPosRight" type="Marker2D" parent="Enemy3"]
+position = Vector2(4, -3)
+
+[node name="GunPosLeft" type="Marker2D" parent="Enemy3"]
+position = Vector2(4, -8)
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="Enemy3"]
+
+[node name="Enemy4" type="RigidBody2D" parent="." groups=["Targetable"]]
+position = Vector2(553, 686)
+rotation = 3.03612
+physics_material_override = SubResource("PhysicsMaterial_cdshl")
+max_contacts_reported = 1
+contact_monitor = true
+script = ExtResource("12_fuwve")
+persue_distance = 200
+persue = true
+
+[node name="Sprite2D" type="Sprite2D" parent="Enemy4"]
+texture = ExtResource("12_3cx4l")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Enemy4"]
+polygon = PackedVector2Array(5, 0, 0, 6, -4, 6, -6, 5, -3, 2, -3, -2, -6, -4, -3, -7, 0, -7)
+
+[node name="LaserSound" type="AudioStreamPlayer" parent="Enemy4"]
+stream = ExtResource("5_vuy1y")
+
+[node name="ShotTimer" type="Timer" parent="Enemy4"]
+process_callback = 0
+wait_time = 1.181
+one_shot = true
+autostart = true
+
+[node name="GunPosRight" type="Marker2D" parent="Enemy4"]
+position = Vector2(4, -3)
+
+[node name="GunPosLeft" type="Marker2D" parent="Enemy4"]
+position = Vector2(4, -8)
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="Enemy4"]
+
+[node name="Map Bounds" type="StaticBody2D" parent="."]
+position = Vector2(2, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map Bounds"]
+position = Vector2(-10, 500)
+shape = SubResource("RectangleShape2D_wqb7a")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Map Bounds"]
+position = Vector2(1010, 500)
+shape = SubResource("RectangleShape2D_wqb7a")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Map Bounds"]
+position = Vector2(500, 1010)
+rotation = 1.5708
+shape = SubResource("RectangleShape2D_wqb7a")
+
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="Map Bounds"]
+position = Vector2(500, -10)
+rotation = 1.5708
+shape = SubResource("RectangleShape2D_wqb7a")
+
+[connection signal="ready" from="Background" to="PlayerCam" method="_on_background_ready"]
+[connection signal="body_entered" from="Enemy" to="Enemy" method="_on_body_entered"]
+[connection signal="screen_entered" from="Enemy/VisibleOnScreenNotifier2D" to="Player" method="_on_visible_on_screen_notifier_2d_screen_entered"]
+[connection signal="screen_exited" from="Enemy/VisibleOnScreenNotifier2D" to="Player" method="_on_visible_on_screen_notifier_2d_screen_exited"]
+[connection signal="body_entered" from="Enemy2" to="Enemy2" method="_on_body_entered"]
+[connection signal="screen_entered" from="Enemy2/VisibleOnScreenNotifier2D" to="Player" method="_on_visible_on_screen_notifier_2d_screen_entered"]
+[connection signal="screen_exited" from="Enemy2/VisibleOnScreenNotifier2D" to="Player" method="_on_visible_on_screen_notifier_2d_screen_exited"]
+[connection signal="body_entered" from="Enemy3" to="Enemy3" method="_on_body_entered"]
+[connection signal="screen_entered" from="Enemy3/VisibleOnScreenNotifier2D" to="Player" method="_on_visible_on_screen_notifier_2d_screen_entered"]
+[connection signal="screen_exited" from="Enemy3/VisibleOnScreenNotifier2D" to="Player" method="_on_visible_on_screen_notifier_2d_screen_exited"]
+[connection signal="body_entered" from="Enemy4" to="Enemy4" method="_on_body_entered"]
+[connection signal="screen_entered" from="Enemy4/VisibleOnScreenNotifier2D" to="Player" method="_on_visible_on_screen_notifier_2d_screen_entered"]
+[connection signal="screen_exited" from="Enemy4/VisibleOnScreenNotifier2D" to="Player" method="_on_visible_on_screen_notifier_2d_screen_exited"]

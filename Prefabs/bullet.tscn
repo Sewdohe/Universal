@@ -5,7 +5,12 @@
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wp073"]
 
-[node name="Bullet" type="RigidBody2D"]
+[node name="Bullet" type="RigidBody2D" groups=["Bullet"]]
+collision_layer = 2
+mass = 0.07
+max_contacts_reported = 1
+contact_monitor = true
+lock_rotation = true
 script = ExtResource("1_4vceq")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -17,3 +22,5 @@ position = Vector2(15, 6)
 rotation = 1.57166
 scale = Vector2(0.166395, 0.166395)
 shape = SubResource("CapsuleShape2D_wp073")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
