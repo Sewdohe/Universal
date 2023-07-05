@@ -80,8 +80,3 @@ func apply_brakes(state):
 	if new_speed < 0:
 		new_speed = 0
 	state.linear_velocity = state.linear_velocity.normalized() * new_speed
-
-
-#func _on_body_entered(body):
-#	if (body.is_in_group("Bullet")):
-#			take_damage(5)
